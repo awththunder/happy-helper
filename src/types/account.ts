@@ -7,6 +7,7 @@ export interface Account {
   digits: number;
   period: number;
   createdAt: number;
+  backupCodes?: string[];
 }
 
 export interface ParsedOTPAuth {

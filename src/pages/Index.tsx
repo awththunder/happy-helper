@@ -4,6 +4,7 @@ import { useAccounts } from '@/hooks/useAccounts';
 import { AccountCard } from '@/components/AccountCard';
 import { AddAccountDialog } from '@/components/AddAccountDialog';
 import { EmptyState } from '@/components/EmptyState';
+import { SettingsMenu } from '@/components/SettingsMenu';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -28,7 +29,7 @@ const manualEntrySchema = z.object({
 });
 
 export default function Index() {
-  const { accounts, isLoading, addAccount, removeAccount } = useAccounts();
+  const { accounts, isLoading, addAccount, removeAccount, updateBackupCodes, importAccounts, clearAllAccounts } = useAccounts();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [tab, setTab] = useState<'scan' | 'manual'>('scan');
   const [issuer, setIssuer] = useState('');
@@ -126,10 +127,18 @@ export default function Index() {
       <div className="relative max-w-lg mx-auto px-4 py-8">
         {/* Header */}
         <header className="text-center mb-8">
-          <div className="inline-flex items-center justify-center gap-3 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
-              <Shield className="h-6 w-6 text-primary" />
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-9" /> {/* Spacer for alignment */}
+            <div className="flex items-center justify-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
+                <Shield className="h-6 w-6 text-primary" />
+              </div>
             </div>
+            <SettingsMenu 
+              accounts={accounts}
+              onImportAccounts={importAccounts}
+              onClearAllAccounts={clearAllAccounts}
+            />
           </div>
           <h1 className="text-2xl font-bold text-foreground mb-1">Authenticator</h1>
           <p className="text-sm text-muted-foreground flex items-center justify-center gap-2">
@@ -328,6 +337,7 @@ export default function Index() {
                 key={account.id}
                 account={account}
                 onDelete={removeAccount}
+                onUpdateBackupCodes={updateBackupCodes}
               />
             ))}
           </div>
