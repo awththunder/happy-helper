@@ -1,4 +1,5 @@
-import { Settings, Download, Upload, Trash2, Shield } from 'lucide-react';
+import { Settings, Download, Upload, Trash2, Shield, KeyRound } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Account } from '@/types/account';
 import { Button } from '@/components/ui/button';
 import {
@@ -49,6 +50,7 @@ interface SettingsMenuProps {
 export function SettingsMenu({ accounts, onImportAccounts, onClearAllAccounts }: SettingsMenuProps) {
   const [showClearDialog, setShowClearDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const handleExport = () => {
     if (accounts.length === 0) {
@@ -140,6 +142,11 @@ export function SettingsMenu({ accounts, onImportAccounts, onClearAllAccounts }:
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem onClick={() => navigate('/backup-codes')}>
+            <KeyRound className="mr-2 h-4 w-4" />
+            Backup Codes
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleExport}>
             <Download className="mr-2 h-4 w-4" />
             Export Backup
