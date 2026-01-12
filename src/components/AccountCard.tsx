@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Copy, Check, Trash2, MoreVertical } from 'lucide-react';
+import { Copy, Check, Trash2, MoreVertical, Eye, KeyRound } from 'lucide-react';
 import { Account } from '@/types/account';
 import { useTOTP } from '@/hooks/useTOTP';
 import { CountdownRing } from './CountdownRing';
+import { ViewSecretDialog } from './ViewSecretDialog';
+import { BackupCodesDialog } from './BackupCodesDialog';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -25,12 +28,15 @@ import { toast } from 'sonner';
 interface AccountCardProps {
   account: Account;
   onDelete: (id: string) => void;
+  onUpdateBackupCodes: (accountId: string, codes: string[]) => void;
 }
 
-export function AccountCard({ account, onDelete }: AccountCardProps) {
+export function AccountCard({ account, onDelete, onUpdateBackupCodes }: AccountCardProps) {
   const { code, timeLeft, period } = useTOTP(account);
   const [copied, setCopied] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showSecretDialog, setShowSecretDialog] = useState(false);
+  const [showBackupCodesDialog, setShowBackupCodesDialog] = useState(false);
 
   const formattedCode = code.slice(0, 3) + ' ' + code.slice(3);
 
@@ -86,6 +92,20 @@ export function AccountCard({ account, onDelete }: AccountCardProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setShowSecretDialog(true)}>
+                <Eye className="mr-2 h-4 w-4" />
+                View Secret
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setShowBackupCodesDialog(true)}>
+                <KeyRound className="mr-2 h-4 w-4" />
+                Backup Codes
+                {account.backupCodes && account.backupCodes.length > 0 && (
+                  <span className="ml-auto text-xs text-muted-foreground">
+                    {account.backupCodes.length}
+                  </span>
+                )}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem
                 className="text-destructive focus:text-destructive"
                 onClick={() => setShowDeleteDialog(true)}
@@ -135,6 +155,19 @@ export function AccountCard({ account, onDelete }: AccountCardProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ViewSecretDialog
+        account={account}
+        open={showSecretDialog}
+        onOpenChange={setShowSecretDialog}
+      />
+
+      <BackupCodesDialog
+        account={account}
+        open={showBackupCodesDialog}
+        onOpenChange={setShowBackupCodesDialog}
+        onUpdateBackupCodes={onUpdateBackupCodes}
+      />
     </>
   );
 }

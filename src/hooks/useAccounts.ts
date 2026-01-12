@@ -44,11 +44,28 @@ export function useAccounts() {
     ));
   }, [accounts, saveAccounts]);
 
+  const updateBackupCodes = useCallback((id: string, codes: string[]) => {
+    saveAccounts(accounts.map(acc => 
+      acc.id === id ? { ...acc, backupCodes: codes } : acc
+    ));
+  }, [accounts, saveAccounts]);
+
+  const importAccounts = useCallback((newAccounts: Account[]) => {
+    saveAccounts([...accounts, ...newAccounts]);
+  }, [accounts, saveAccounts]);
+
+  const clearAllAccounts = useCallback(() => {
+    saveAccounts([]);
+  }, [saveAccounts]);
+
   return {
     accounts,
     isLoading,
     addAccount,
     removeAccount,
     updateAccount,
+    updateBackupCodes,
+    importAccounts,
+    clearAllAccounts,
   };
 }
